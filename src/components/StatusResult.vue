@@ -16,53 +16,75 @@
 	const statusClass = (s: string) => {
 		switch (s?.toLowerCase()) {
 			case 'sample_received':
-				return 'px-2 rounded-full bg-gray-400 text-white font-semibold'
+				return 'bg-slate-100 text-slate-700'
 			case 'in_process':
-				return 'px-2 rounded-full bg-blue-400 text-white font-semibold'
+			case 'in_processing':
+				return 'bg-blue-100 text-blue-700'
 			case 'resampling':
-				return 'px-2 rounded-full bg-orange-400 text-white font-semibold'
+				return 'bg-amber-100 text-amber-700'
 			case 'report_released':
-				return 'px-2 rounded-full bg-green-400 text-white font-semibold'
+				return 'bg-green-100 text-green-700'
 			case 'rejected':
-				return 'px-2 rounded-full bg-red-400 text-white font-semibold'
+				return 'bg-red-100 text-red-700'
 			default:
-				return 'px-2 rounded-full bg-gray-400 text-white font-semibold'
+				return 'bg-slate-100 text-slate-700'
 		}
+	}
+
+	const statusLabel = (s: string) => {
+		const labels: Record<string, string> = {
+			sample_received: 'Sample received',
+			in_process: 'In process',
+			in_processing: 'In process',
+			resampling: 'Resampling needed',
+			report_released: 'Report released',
+			rejected: 'Rejected'
+		}
+
+		return labels[s?.toLowerCase()] || s
 	}
 </script>
 
 <template>
-	<div class="text-left">
-		<div class="mb-4">
-			<h2 class="text-lg font-semibold text-gray-900">
-				Sample status for: {{ censorName(samples[0].name) }}
-			</h2>
-			<p class="text-sm text-gray-600">
-				<span class="font-medium">Birthday:</span>
-				{{ formatDate(samples[0].birthday) }}
-			</p>
+	<div class="flex flex-col gap-3">
+		<div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+			<div>
+				<p class="text-xs font-semibold uppercase tracking-wide text-teal-700">Matched profile</p>
+				<h2 class="text-lg font-bold text-slate-900">
+					{{ censorName(samples[0].name) }}
+				</h2>
+				<p class="text-sm text-slate-500">
+					Birthday: {{ formatDate(samples[0].birthday) }}
+				</p>
+			</div>
 		</div>
 
 		<div
 			v-for="sample in samples"
 			:key="sample.barcode"
-			class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-3"
+			class="rounded-xl border border-slate-200 bg-white p-4"
 		>
-			<p class="text-sm text-gray-600">
-				<span class="font-medium">Product:</span>
-				{{ sample.product }}
-			</p>
-			<div class="flex gap-2 text-sm text-gray-600">
-				<span class="font-medium">Status:</span>
-				<div :class="statusClass(sample.status)">
-					{{ sample.status }}
+			<div class="flex items-start justify-between gap-3">
+				<div>
+					<p class="text-xs font-semibold uppercase tracking-wide text-teal-700">Product</p>
+					<h3 class="font-bold text-slate-900">
+						{{ sample.product }}
+					</h3>
+				</div>
+				<div
+					:class="[
+						'shrink-0 rounded-full px-3 py-1 text-xs font-bold',
+						statusClass(sample.status)
+					]"
+				>
+					{{ statusLabel(sample.status) }}
 				</div>
 			</div>
-			<p class="text-xs text-gray-400">Barcode: {{ sample.barcode }}</p>
+			<p class="mt-2 text-sm text-slate-500">Barcode: {{ sample.barcode }}</p>
 		</div>
 		<button
 			@click="$emit('reset')"
-			class="mt-4 w-full py-2.5 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300"
+			class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50"
 		>
 			Look up another
 		</button>

@@ -46,41 +46,57 @@
 </script>
 
 <template>
-	<div class="flex flex-col gap-4 text-left">
-		<p class="text-gray-600 text-sm">Enter your name and birthday.</p>
+	<div>
+		<div class="flex flex-col gap-4">
+			<div>
+				<label
+					for="name"
+					class="block text-sm font-semibold text-slate-700 mb-2"
+				>
+					Full name
+				</label>
+				<input
+					id="name"
+					v-model.trim="name"
+					type="text"
+					placeholder="Example: Alya Putri"
+					class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+					@keyup.enter="lookup"
+				/>
+			</div>
 
-		<div>
-			<label class="block text-sm font-medium text-gray-700">Name</label>
-			<input
-				v-model.trim="name"
-				type="text"
-				placeholder="Full name"
-				class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3"
-				@keyup.enter="lookup"
-			/>
+			<div>
+				<label
+					for="birthday"
+					class="block text-sm font-semibold text-slate-700 mb-2"
+				>
+					Date of birth
+				</label>
+				<input
+					id="birthday"
+					v-model="birthday"
+					type="date"
+					class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+					@keyup.enter="lookup"
+				/>
+			</div>
+
+			<button
+				@click="lookup"
+				:disabled="!name || !birthday || loading"
+				class="w-full rounded-xl bg-teal-700 px-4 py-3 font-semibold text-white flex items-center justify-center gap-2 hover:bg-teal-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+			>
+				<span
+					v-if="loading"
+					class="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"
+				></span>
+				{{ loading ? 'Searching...' : 'Look up status' }}
+			</button>
 		</div>
-
-		<div>
-			<label class="block text-sm font-medium text-gray-700">Birthday</label>
-			<input
-				v-model="birthday"
-				type="date"
-				class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
-				@keyup.enter="lookup"
-			/>
-		</div>
-
-		<button
-			@click="lookup"
-			:disabled="!name || !birthday || loading"
-			class="w-full py-2.5 px-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-		>
-			{{ loading ? 'Searching...' : 'Look up' }}
-		</button>
 
 		<div
 			v-if="error"
-			class="mt-3 bg-red-100 text-red-700 p-3 rounded-lg text-sm"
+			class="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700"
 		>
 			{{ error }}
 		</div>
