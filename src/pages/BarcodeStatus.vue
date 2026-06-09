@@ -1,21 +1,20 @@
 <script setup lang="ts">
 	import { ref } from 'vue'
-	import BarcodeInput from '../components/BarcodeInput.vue'
+	import type { Sample } from '../types/barcodeStatus.type'
 	import CredentialInput from '../components/CredentialInput.vue'
-	import StatusDisplay from '../components/StatusDisplay.vue'
-	import type { Sample } from '../types/barcodeStatus.type.ts'
+	import StatusResult from '../components/StatusResult.vue'
 
-	const step = ref<'barcode' | 'challenge' | 'result'>('barcode')
-	const currentSample = ref<Sample | null>(null)
+	const step = ref<'challenge' | 'result'>('challenge')
+	const currentSamples = ref<Sample[]>([])
 
-	function onBarcodeFound(sample: Sample) {
-		currentSample.value = sample
-		step.value = 'challenge'
+	function onCredentialsFound(samples: Sample[]) {
+		currentSamples.value = samples
+		step.value = 'result'
 	}
 
 	function reset() {
-		step.value = 'barcode'
-		currentSample.value = null
+		step.value = 'challenge'
+		currentSamples.value = []
 	}
 </script>
 
@@ -24,27 +23,25 @@
 		<div class="bg-white rounded-xl shadow-md p-8 max-w-md w-full text-center">
 			<h1 class="text-2xl font-bold text-gray-900 mb-1">Sample Status</h1>
 			<p class="text-gray-500 mb-6">
-				{{
-					step === 'result'
-						? 'Your sample details'
-						: 'Enter your barcode to begin'
-				}}
+				Enter your credentials to view your status
 			</p>
 
-			<BarcodeInput v-if="step === 'barcode'" @found="onBarcodeFound" />
-
 			<CredentialInput
-				v-if="step === 'challenge' && currentSample"
-				:sample="currentSample"
-				@verified="step = 'result'"
-				@back="step = 'barcode'"
+				v-if="step === 'challenge'"
+				@found="onCredentialsFound"
 			/>
 
-			<StatusDisplay
-				v-if="step === 'result' && currentSample"
-				:sample="currentSample"
+			<StatusResult
+				v-if="step === 'result'"
+				:samples="currentSamples"
 				@reset="reset"
 			/>
+
+			<!-- <StatusLis
+				v-if="step === 'result' && currentSamples.length > 1"
+				:samples="currentSamples"
+				@reset="reset"
+			/> -->
 		</div>
 	</div>
 </template>

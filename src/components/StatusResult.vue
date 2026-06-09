@@ -25,9 +25,16 @@
 		}
 	}
 </script>
+
 <template>
 	<div class="text-left">
-		<h2 class="text-lg font-semibold text-gray-900 mb-4">Matching records</h2>
+		<h2 class="text-lg font-semibold text-gray-900 mb-4">
+			{{
+				samples.length === 1
+					? 'Your sample'
+					: `Matching records (${samples.length})`
+			}}
+		</h2>
 		<div
 			v-for="sample in samples"
 			:key="sample.barcode"
