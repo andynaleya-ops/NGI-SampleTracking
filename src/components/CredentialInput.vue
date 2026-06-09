@@ -1,15 +1,9 @@
 <script setup lang="ts">
 	import { ref } from 'vue'
-
-	interface Sample {
-		barcode: string
-		name: string
-		birthday: string
-		status: string
-	}
+	import type { SampleType } from '../types/sample.type'
 
 	const emit = defineEmits<{
-		found: [samples: Sample[]]
+		found: [samples: SampleType[]]
 	}>()
 
 	const name = ref('')
@@ -20,14 +14,13 @@
 	const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 	const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-	async function lookup() {
+	const lookup = async () => {
 		if (!name.value || !birthday.value) return
 
 		loading.value = true
 		error.value = ''
 
 		try {
-			// Exact case‑insensitive name match and exact date match
 			const url = `${SUPABASE_URL}/rest/v1/samples?name=ilike.${encodeURIComponent(name.value)}&birthday=eq.${encodeURIComponent(birthday.value)}`
 			const res = await fetch(url, {
 				headers: {
@@ -38,11 +31,11 @@
 
 			if (!res.ok) throw new Error(`Server error (${res.status})`)
 
-			const data: Sample[] = await res.json()
+			const data: SampleType[] = await res.json()
 			if (data.length > 0) {
 				emit('found', data)
 			} else {
-				error.value = 'No record found for that name and birthday.'
+				error.value = 'No record found for that name and date of birth.'
 			}
 		} catch (e: any) {
 			error.value = e.message || 'Something went wrong.'
@@ -53,25 +46,29 @@
 </script>
 
 <template>
-	<div class="text-left">
-		<p class="text-gray-600 mb-4 text-sm">Enter your name and birthday.</p>
+	<div class="flex flex-col gap-4 text-left">
+		<p class="text-gray-600 text-sm">Enter your name and birthday.</p>
 
-		<label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-		<input
-			v-model.trim="name"
-			type="text"
-			placeholder="Full name"
-			class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3"
-			@keyup.enter="lookup"
-		/>
+		<div>
+			<label class="block text-sm font-medium text-gray-700">Name</label>
+			<input
+				v-model.trim="name"
+				type="text"
+				placeholder="Full name"
+				class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-3"
+				@keyup.enter="lookup"
+			/>
+		</div>
 
-		<label class="block text-sm font-medium text-gray-700 mb-1">Birthday</label>
-		<input
-			v-model="birthday"
-			type="date"
-			class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
-			@keyup.enter="lookup"
-		/>
+		<div>
+			<label class="block text-sm font-medium text-gray-700">Birthday</label>
+			<input
+				v-model="birthday"
+				type="date"
+				class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+				@keyup.enter="lookup"
+			/>
+		</div>
 
 		<button
 			@click="lookup"

@@ -1,19 +1,19 @@
 <script setup lang="ts">
 	import { ref } from 'vue'
-	import type { Sample } from '../types/barcodeStatus.type'
+	import type { SampleType } from '../types/sample.type.ts'
 	import CredentialInput from '../components/CredentialInput.vue'
 	import StatusResult from '../components/StatusResult.vue'
 
-	const step = ref<'challenge' | 'result'>('challenge')
-	const currentSamples = ref<Sample[]>([])
+	const step = ref<'credential' | 'result'>('credential')
+	const currentSamples = ref<SampleType[]>([])
 
-	function onCredentialsFound(samples: Sample[]) {
+	function onCredentialsFound(samples: SampleType[]) {
 		currentSamples.value = samples
 		step.value = 'result'
 	}
 
 	function reset() {
-		step.value = 'challenge'
+		step.value = 'credential'
 		currentSamples.value = []
 	}
 </script>
@@ -27,7 +27,7 @@
 			</p>
 
 			<CredentialInput
-				v-if="step === 'challenge'"
+				v-if="step === 'credential'"
 				@found="onCredentialsFound"
 			/>
 
@@ -36,12 +36,6 @@
 				:samples="currentSamples"
 				@reset="reset"
 			/>
-
-			<!-- <StatusLis
-				v-if="step === 'result' && currentSamples.length > 1"
-				:samples="currentSamples"
-				@reset="reset"
-			/> -->
 		</div>
 	</div>
 </template>

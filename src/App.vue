@@ -1,7 +1,7 @@
 <script setup lang="ts">
-	import BarcodeStatus from './pages/BarcodeStatus.vue'
+	import SampleStatus from './pages/SampleStatus.vue'
 </script>
 
 <template>
-	<BarcodeStatus />
+	<SampleStatus />
 </template>

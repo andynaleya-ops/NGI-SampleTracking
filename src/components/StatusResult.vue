@@ -1,10 +1,11 @@
 <script setup lang="ts">
-	import type { Sample } from '../types/barcodeStatus.type'
+	import type { SampleType } from '../types/sample.type'
+	import { censorName } from '../utilities/functions'
 
-	defineProps<{ samples: Sample[] }>()
+	defineProps<{ samples: SampleType[] }>()
 	defineEmits<{ reset: [] }>()
 
-	function formatDate(iso: string) {
+	const formatDate = (iso: string) => {
 		return new Date(iso).toLocaleDateString(undefined, {
 			year: 'numeric',
 			month: 'long',
@@ -12,43 +13,51 @@
 		})
 	}
 
-	function statusClass(s: string) {
+	const statusClass = (s: string) => {
 		switch (s?.toLowerCase()) {
-			case 'complete':
-				return 'text-green-600 font-semibold'
-			case 'pending':
-				return 'text-yellow-600 font-semibold'
-			case 'shipped':
-				return 'text-blue-600 font-semibold'
+			case 'sample_received':
+				return 'px-2 rounded-full bg-gray-400 text-white font-semibold'
+			case 'in_process':
+				return 'px-2 rounded-full bg-blue-400 text-white font-semibold'
+			case 'resampling':
+				return 'px-2 rounded-full bg-orange-400 text-white font-semibold'
+			case 'report_released':
+				return 'px-2 rounded-full bg-green-400 text-white font-semibold'
+			case 'rejected':
+				return 'px-2 rounded-full bg-red-400 text-white font-semibold'
 			default:
-				return 'text-gray-600'
+				return 'px-2 rounded-full bg-gray-400 text-white font-semibold'
 		}
 	}
 </script>
 
 <template>
 	<div class="text-left">
-		<h2 class="text-lg font-semibold text-gray-900 mb-4">
-			{{
-				samples.length === 1
-					? 'Your sample'
-					: `Matching records (${samples.length})`
-			}}
-		</h2>
+		<div class="mb-4">
+			<h2 class="text-lg font-semibold text-gray-900">
+				Sample status for: {{ censorName(samples[0].name) }}
+			</h2>
+			<p class="text-sm text-gray-600">
+				<span class="font-medium">Birthday:</span>
+				{{ formatDate(samples[0].birthday) }}
+			</p>
+		</div>
+
 		<div
 			v-for="sample in samples"
 			:key="sample.barcode"
-			class="bg-green-50 border border-green-200 rounded-lg p-4 mb-3"
+			class="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-3"
 		>
-			<p class="font-medium text-gray-900">{{ sample.name }}</p>
 			<p class="text-sm text-gray-600">
-				<span class="font-medium">Birthday:</span>
-				{{ formatDate(sample.birthday) }}
+				<span class="font-medium">Product:</span>
+				{{ sample.product }}
 			</p>
-			<p class="text-sm text-gray-600">
+			<div class="flex gap-2 text-sm text-gray-600">
 				<span class="font-medium">Status:</span>
-				<span :class="statusClass(sample.status)">{{ sample.status }}</span>
-			</p>
+				<div :class="statusClass(sample.status)">
+					{{ sample.status }}
+				</div>
+			</div>
 			<p class="text-xs text-gray-400">Barcode: {{ sample.barcode }}</p>
 		</div>
 		<button
